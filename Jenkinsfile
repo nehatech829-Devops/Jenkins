@@ -2,28 +2,26 @@ pipeline {
     agent any
 
     stages {
-        stage('Checkout') {
+
+        stage('Deploy Dev') {
+            when {
+                branch 'dev'
+            }
             steps {
-                git branch: "${BRANCH}",
-                    url: 'https://github.com/nehatech829-Devops/Jenkins.git'
+                sh '''
+                cp -r dev/* /var/lib/jenkins/deploy/dev/
+                '''
             }
         }
 
-        stage('Deploy') {
+        stage('Deploy Main') {
+            when {
+                branch 'main'
+            }
             steps {
-                script {
-                    if (params.BRANCH == 'main') {
-                        sh '''
-                        mkdir -p /var/lib/jenkins/deploy/main
-                        cp -r * /var/lib/jenkins/deploy/main/
-                        '''
-                    } else if (params.BRANCH == 'dev') {
-                        sh '''
-                        mkdir -p /var/lib/jenkins/deploy/dev
-                        cp -r * /var/lib/jenkins/deploy/dev/
-                        '''
-                    }
-                }
+                sh '''
+                cp -r main/* /var/lib/jenkins/deploy/main/
+                '''
             }
         }
     }
