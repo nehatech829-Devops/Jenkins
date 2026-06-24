@@ -1,39 +1,25 @@
 pipeline {
     agent any
 
-    parameters {
-        choice(
-            name: 'BRANCH',
-            choices: ['main', 'dev'],
-            description: 'Select branch'
-        )
-    }
-
     stages {
-
-        stage('Checkout') {
-            steps {
-                git branch: params.BRANCH,
-                    url: 'https://github.com/nehatech829-Devops/Jenkins.git'
-            }
-        }
-
         stage('Deploy') {
             steps {
                 script {
-
                     if (params.BRANCH == 'main') {
                         sh '''
-                        cp -r main/* /var/lib/jenkins/deploy/main/
-                        '''
-                    }
+                        cp -r main/index.txt /var/lib/jenkins/deploy/main/
 
-                    if (params.BRANCH == 'dev') {
+                        echo "===== MAIN OUTPUT ====="
+                        cat /var/lib/jenkins/deploy/main/index.txt
+                        '''
+                    } else {
                         sh '''
-                        cp -r dev/* /var/lib/jenkins/deploy/dev/
+                        cp -r dev/index.txt /var/lib/jenkins/deploy/dev/
+
+                        echo "===== DEV OUTPUT ====="
+                        cat /var/lib/jenkins/deploy/dev/index.txt
                         '''
                     }
-
                 }
             }
         }
