@@ -1,26 +1,45 @@
 pipeline {
     agent any
 
+    parameters {
+        choice(
+            name: 'BRANCH',
+            choices: ['main', 'dev', 'test'],
+            description: 'Select branch to deploy'
+        )
+    }
+
     stages {
-        stage('Deploy') {
+
+        stage('Checkout') {
+            steps {
+                git branch: params.BRANCH,
+                    credentialsId: 'GitHub Deploy',
+                    url: 'git@github.com:nehatech829-Devops/Jenkins.git'
+            }
+        }
+
+        stage('Display Content') {
             steps {
                 script {
-                    echo "GIT_BRANCH = ${env.GIT_BRANCH}"
+                    echo "Current Branch: ${params.BRANCH}"
 
-                    if (env.GIT_BRANCH.contains('main')) {
-
+                    if (params.BRANCH == 'main') {
                         sh '''
-                        cp -r main/index.txt /var/lib/jenkins/deploy/main/
-                        echo "===== MAIN OUTPUT ====="
-                        cat /var/lib/jenkins/deploy/main/index.txt
+                        echo "===== MAIN BRANCH ====="
+                        cat main/index.txt
                         '''
-
-                    } else if (env.GIT_BRANCH.contains('dev')) {
-
+                    }
+                    else if (params.BRANCH == 'dev') {
                         sh '''
-                        cp -r dev/index.txt /var/lib/jenkins/deploy/dev/
-                        echo "===== DEV OUTPUT ====="
-                        cat /var/lib/jenkins/deploy/dev/index.txt
+                        echo "===== DEV BRANCH ====="
+                        cat dev/index.txt
+                        '''
+                    }
+                    else if (params.BRANCH == 'test') {
+                        sh '''
+                        echo "===== TEST BRANCH ====="
+                        cat test/index.txt
                         '''
                     }
                 }
