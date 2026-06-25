@@ -15,7 +15,7 @@ pipeline {
             steps {
                 git branch: params.BRANCH,
                     credentialsId: 'GitHub Deploy',
-                    url: 'git@github.com:nehatech829-Devops/Jenkins.git'
+                    url: 'https://github.com/nehatech829-Devops/Jenkins.git'
             }
         }
 
