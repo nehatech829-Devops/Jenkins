@@ -5,15 +5,9 @@ pipeline {
         stage('Deploy') {
             steps {
                 script {
+                    echo "GIT_BRANCH = ${env.GIT_BRANCH}"
 
-                    def branch = sh(
-                        script: "git rev-parse --abbrev-ref HEAD",
-                        returnStdout: true
-                    ).trim()
-
-                    echo "Current Branch: ${branch}"
-
-                    if (branch == "main") {
+                    if (env.GIT_BRANCH.contains('main')) {
 
                         sh '''
                         cp -r main/index.txt /var/lib/jenkins/deploy/main/
@@ -21,14 +15,13 @@ pipeline {
                         cat /var/lib/jenkins/deploy/main/index.txt
                         '''
 
-                    } else if (branch == "dev") {
+                    } else if (env.GIT_BRANCH.contains('dev')) {
 
                         sh '''
                         cp -r dev/index.txt /var/lib/jenkins/deploy/dev/
                         echo "===== DEV OUTPUT ====="
                         cat /var/lib/jenkins/deploy/dev/index.txt
                         '''
-
                     }
                 }
             }
